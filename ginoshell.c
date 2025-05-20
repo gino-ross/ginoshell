@@ -24,36 +24,17 @@ void gshell_loop(void) {
 }
 
 char *gshell_read_line(void) {
-  int bufsize = MAX_INPUT_SIZE;
-  char *buffer = malloc(sizeof(char) * bufsize);
-  int pos, c;
+  char *line = NULL;
+  size_t bufsize = 0;
 
-  // error allocating buffer
-  if (!buffer) {
-    fprintf(stderr, MALLOC_ERR);
-    exit(EXIT_FAILURE);
-  }
-
-  while (1) {
-    // read a char
-    c = getchar();
-
-    // if we hit newline, replace it with null terminator
-    if (c == EOF || c == '\n') {
-      buffer[pos] = '\0';
-      return buffer;
+  if (getline(&line, &bufsize, stdin) == -1) {
+    if (feof(stdin)) {
+      exit(EXIT_SUCCESS); // EOF
     } else {
-      buffer[pos] = c;
-    }
-    pos++;
-  }
-
-  // if we exceed bufsize, realloc
-  if (pos >= bufsize) {
-    bufsize += MAX_INPUT_SIZE;
-    if (!(buffer = realloc(buffer, sizeof(char) * bufsize))) {
-      fprintf(stderr, MALLOC_ERR);
+      perror("getline");
       exit(EXIT_FAILURE);
     }
   }
+
+  return line;
 }
