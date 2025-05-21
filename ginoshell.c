@@ -2,6 +2,8 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <sys/wait.h>
+#include <unistd.h>
 
 #define MALLOC_ERR "\nError allocating memory!\n"
 
@@ -62,10 +64,48 @@ char **gshell_parse_args(char *line) {
         exit(EXIT_FAILURE);
       }
     }
+    // continue tokenisation by calling with NULL
     token = strtok(NULL, TOK_DELIM);
   }
 
   // null terminate token array
   tokens[pos] = NULL;
   return tokens;
+}
+
+int gshell_launch_process(char **args) {
+  pid_t pid, wpid;
+  int status;
+
+  pid = fork();
+  if (pid == 0) {
+    // process is a child
+    if (execvp(args[0], args) == -1) {
+      // if execvp returns -1 an error occured
+      perror("ginoshell");
+    }
+    exit(EXIT_FAILURE);
+  } else if (pid < 0) {
+    // error forking
+    perror("ginoshell");
+  } else {
+    do {
+      // fork executed successfully
+      // wait for child process to finish or be exited/error
+      wpid = waitpid(pid, &status, WUNTRACED);
+    } while (!WIFEXITED(status) && !WIFSIGNALED(status));
+  }
+
+  return 1;
+}
+
+int gshell_exec(char **args) {
+  if (args[0] == NULL) {
+    // no command
+    return 1;
+  }
+
+  // add builtins
+
+  return gshell_launch_process(args);
 }

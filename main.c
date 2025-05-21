@@ -2,11 +2,10 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-int main(int argc, char *argv[]) {
+int main() {
 
   // call ginoshell
-  //  gshell_loop();
-  printf("hello world\n");
+  gshell_loop();
 
   return EXIT_SUCCESS;
 }
