@@ -1,4 +1,6 @@
+#define _GNU_SOURCE
 #include "ginoshell.h"
+#include "gshell_builtins.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -93,6 +95,7 @@ int gshell_launch_process(char **args) {
       // fork executed successfully
       // wait for child process to finish or be exited/error
       wpid = waitpid(pid, &status, WUNTRACED);
+      (void)wpid; // unused variable
     } while (!WIFEXITED(status) && !WIFSIGNALED(status));
   }
 
@@ -100,12 +103,19 @@ int gshell_launch_process(char **args) {
 }
 
 int gshell_exec(char **args) {
+  int i = 0;
+
   if (args[0] == NULL) {
     // no command
     return 1;
   }
 
   // add builtins
+  for (i = 0; i < num_builtins(); i++) {
+    if (strcmp(args[0], builtins[i]) == 0) {
+      return (*builtin_func[i])(args);
+    }
+  }
 
   return gshell_launch_process(args);
 }
