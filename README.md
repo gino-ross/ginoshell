@@ -31,7 +31,7 @@ make
 ./ginoshell
 ```
 
-## Things to and
+## Things to add
 
 - Piping with | and redirection with > and <
 - Basic tab completion for files/directories
