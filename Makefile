@@ -6,7 +6,7 @@ LDFLAGS=
 TARGET=ginoshell
 
 # source files and object files
-SRCS=main.c ginoshell.c
+SRCS=main.c ginoshell.c gshell_builtins.c
 OBJS=$(SRCS:.c=.o)
 
 # target to run when make is typed
@@ -17,7 +17,7 @@ $(TARGET): $(OBJS)
 	$(CC) $(CFLAGS) $(OBJS) -o $(TARGET) $(LDFLAGS)
 
 # compile source files into object files
-%.o: %.c ginoshell.h
+%.o: %.c ginoshell.h gshell_builtins.h
 	$(CC) $(CFLAGS) -c $< -o $@
 
 # clean build artifacts
